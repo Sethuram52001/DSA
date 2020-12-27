@@ -1,42 +1,114 @@
 import java.util.*;
 
 public class StronglyConnectedComponents {
-    class Graph {
-        int V;
-        ArrayList<ArrayList<Integer> > adj;
+    static class Graph {
+        private int V; 
+        private LinkedList<Integer> adj[]; 
 
-        Graph(int V) {
-            this.V = V;
-            adj = new ArrayList<ArrayList<Integer> >(V); 
-            for (int i = 0; i < V; ++i) 
-                adj.add(new ArrayList<Integer>()); 
+        Graph(int v) {
+            V = v;
+            adj = new LinkedList[v];
+            for (int i = 0; i < v; ++i)
+                adj[i] = new LinkedList();
         }
 
+        //Function to add an edge into the graph 
         void addEdge(int v, int w) {
-            adj.get(v).add(w);
+            adj[v].add(w);
         }
 
-        void DFShelper(int v, boolean visited[]) {
+        // A recursive function to print DFS starting from v 
+        void DFSUtil(int v, boolean visited[]) {
+            // Mark the current node as visited and print it 
             visited[v] = true;
-            System.out.println(v + " ");
+            System.out.print(v + " ");
+
             int n;
-            Iterator<Integer> i = adj.get(v).iterator();
+
+            // Recur for all the vertices adjacent to this vertex 
+            Iterator<Integer> i = adj[v].iterator();
             while (i.hasNext()) {
                 n = i.next();
                 if (!visited[n])
-                    DFShelper(n, visited);
+                    DFSUtil(n, visited);
             }
         }
-        
+
+        // Function that returns reverse (or transpose) of this graph 
         Graph getTranspose() {
             Graph g = new Graph(V);
             for (int v = 0; v < V; v++) {
-                Iterator<Integer> i = adj.get(v).listIterator();
-                while (i.hasNext()) {
-                    g.adj.get(i.next()).add(V);
-                }
+                // Recur for all the vertices adjacent to this vertex 
+                Iterator<Integer> i = adj[v].listIterator();
+                while (i.hasNext())
+                    g.adj[i.next()].add(v);
             }
             return g;
         }
+
+        void fillOrder(int v, boolean visited[], Stack stack) {
+            // Mark the current node as visited and print it 
+            visited[v] = true;
+
+            // Recur for all the vertices adjacent to this vertex 
+            Iterator<Integer> i = adj[v].iterator();
+            while (i.hasNext()) {
+                int n = i.next();
+                if (!visited[n])
+                    fillOrder(n, visited, stack);
+            }
+
+            // All vertices reachable from v are processed by now, 
+            // push v to Stack 
+            stack.push(v);
+        }
+
+        // The main function that finds and prints all strongly 
+        // connected components 
+        void printSCCs() {
+            Stack stack = new Stack();
+
+            // Mark all the vertices as not visited (For first DFS) 
+            boolean visited[] = new boolean[V];
+            for (int i = 0; i < V; i++)
+                visited[i] = false;
+
+            // Fill vertices in stack according to their finishing 
+            // times 
+            for (int i = 0; i < V; i++)
+                if (visited[i] == false)
+                    fillOrder(i, visited, stack);
+
+            // Create a reversed graph 
+            Graph gr = getTranspose();
+
+            // Mark all the vertices as not visited (For second DFS) 
+            for (int i = 0; i < V; i++)
+                visited[i] = false;
+
+            // Now process all vertices in order defined by Stack 
+            while (stack.empty() == false) {
+                // Pop a vertex from stack 
+                int v = (int) stack.pop();
+
+                // Print Strongly connected component of the popped vertex 
+                if (visited[v] == false) {
+                    gr.DFSUtil(v, visited);
+                    System.out.println();
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Graph g = new Graph(5);
+        g.addEdge(1, 0);
+        g.addEdge(0, 2);
+        g.addEdge(2, 1);
+        g.addEdge(0, 3);
+        g.addEdge(3, 4);
+
+        System.out.println("Following are strongly connected components " + "in given graph ");
+        g.printSCCs();
     }
 }
