@@ -68,16 +68,24 @@ class TopologicalSort {
 	public static void main(String args[]) 
 	{ 
 		// Create a graph given in the above diagram 
-		Graph g = new Graph(6); 
-		g.addEdge(5, 2); 
-		g.addEdge(5, 0); 
-		g.addEdge(4, 0); 
-		g.addEdge(4, 1); 
-		g.addEdge(2, 3); 
-		g.addEdge(3, 1); 
+		Graph g = new Graph(8); 
+		g.addEdge(7, 5);
+		g.addEdge(7, 6);
+		g.addEdge(5, 4);
+		g.addEdge(6, 4);
+		g.addEdge(5, 2);
+		g.addEdge(6, 3);
+		g.addEdge(2, 1);
+		g.addEdge(3, 1);
+		g.addEdge(1, 0);
 
 		System.out.println("Following is a Topological sort of the given graph"); 
-		g.topologicalSort(); 
+		g.topologicalSort();
+		/*
+			Output:
+				Following is a Topological sort of the given graph
+				7 6 5 4 3 2 1 0
+		*/
 	} 
 }
 
